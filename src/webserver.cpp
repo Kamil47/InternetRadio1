@@ -1,10 +1,10 @@
 //home page and template for options
 #include <Arduino.h>
 #include "index.h"          //N Index page
-#include "ArduinoJson.h"
+#include <ArduinoJson.h>
 #include "audio.h"
 #include "fonts.h"
-#include "WebServer.h"
+#include <WebServer.h>
 #include "00_settings.h"      //N Setting
 #include "00_texte.h"
 WebServer server(80);
@@ -587,20 +587,20 @@ void getInfo() {
   jsonDoc["radioversion"] = RADIOVERSION;
 
   // Creating a sub-object for ESP board information
-  JsonObject ESP_INFO = jsonDoc.createNestedObject("ESP_INFO");
+  JsonObject ESP_INFO = jsonDoc["ESP_INFO"].to<JsonObject>();
 
   // HEAP information
-  JsonObject HEAP = ESP_INFO.createNestedObject("HEAP");
+  JsonObject HEAP = ESP_INFO["HEAP"].to<JsonObject>();
   HEAP["getHeapSize"] = ESP.getHeapSize();  // Total heap size
   HEAP["getFreeHeap"] = ESP.getFreeHeap();  // Free heap space
 
   // SKETCH Information
-  JsonObject SKETCH = ESP_INFO.createNestedObject("SKETCH");
+  JsonObject SKETCH = ESP_INFO["SKETCH"].to<JsonObject>();
   SKETCH["getSketchSize"] = ESP.getSketchSize();            // Total heap size
   SKETCH["getFreeSketchSpace"] = ESP.getFreeSketchSpace();  // Free heap space
 
   // CHIP Information
-  JsonObject CHIP = ESP_INFO.createNestedObject("CHIP");
+  JsonObject CHIP = ESP_INFO["CHIP"].to<JsonObject>();
   CHIP["getChipModel"] = ESP.getChipModel();  // Model of the chip used
 
   // Converting the JSON document to a string
