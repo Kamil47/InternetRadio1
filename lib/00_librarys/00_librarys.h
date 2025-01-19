@@ -10,7 +10,7 @@
 #include <TouchEvent.h>             // Library to analyse Touchscreen-Events
 
 // ESP32 Library for Flash Memory Setting
-//#include <Preferences.h>
+#include <Preferences.h>
 
 // Library for installed Webserver
 #include <WebServer.h>
