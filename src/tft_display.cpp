@@ -32,6 +32,7 @@ boolean radiopage = false;
 boolean configpage = false;
 const char* PROGMEM months[] = { "Jan.", "Feb.", "Mar", "April", "Maj", "Jun", "Jul", "Aug.", "Sept.", "Okt.", "Nov.", "Dec." };
 // Structure for storing alarm configuration
+
 typedef struct {
   uint8_t alarmday_1 = 0B00111110;  // Valid days of the week for Alarm 1 (example 00111110 means Monday to Friday)
   uint8_t h_1;                      // Alarm Hour for Alarm 1
@@ -1016,6 +1017,8 @@ void showRadioPage() {
 }
 
 // Function to display the full alarm screen
+
+
 void showAlarmPage() {
   //Update the alarm configuration for the first alarm
   alarmConfig.alarmday_1 = alarmday1;  // Set the day of the week of the first alarm
