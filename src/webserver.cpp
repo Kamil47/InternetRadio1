@@ -16,7 +16,7 @@ void restart();
 void setAccessData();
 void getAccessData();
 void getAlarms();
-void setAlarms();
+
 void getStationData();
 void setStationData();
 void testStation();
@@ -24,8 +24,8 @@ void endTest();
 void startPlay();
 void stopPlay();
 void GainSlider();
-void btnAlarm();
-void startSleep();
+
+
 void beforeStation();
 void nextStation();
 void getCurrentStatus();
@@ -48,8 +48,8 @@ void setup_webserver() {
   server.on("/cmd/restart", restart);                  // Restarts the system
   server.on("/cmd/setaccess", setAccessData);          // Sets the access data
   server.on("/cmd/getaccess", getAccessData);          // Gets the credentials
-  server.on("/cmd/getalarms", getAlarms);              // Gets the alarm configuration
-  server.on("/cmd/setalarms", setAlarms);              // Sets the alarm configuration
+  
+  
   server.on("/cmd/getstation", getStationData);        // Retrieves the data of the current station
   server.on("/cmd/setstation", setStationData);        // Sets the data of the current station
   server.on("/cmd/teststation", testStation);          // Tests the connection to the current station
@@ -59,8 +59,7 @@ void setup_webserver() {
   server.on("/cmd/startPlay", startPlay);                // Starts playback
   server.on("/cmd/stopPlay", stopPlay);                  // Stops playback
   server.on("/cmd/GainSlider", GainSlider);              // Sets the value of the volume control
-  server.on("/cmd/btnAlarm", btnAlarm);                  // Turns the alarm on or off
-  server.on("/cmd/startSleep", startSleep);              // Starts sleep mode
+  
   server.on("/cmd/beforeStation", beforeStation);        // Goes to the previous station
   server.on("/cmd/nextStation", nextStation);            // Move to the next station
   server.on("/cmd/getCurrentStatus", getCurrentStatus);  // Gets the current status
@@ -222,62 +221,15 @@ uint16_t stringToMinutes(String val) {
 }
 
 // Processes the AJAX command /cmd/setalarms to set alarm times
-void setAlarms() {
-  char txt[10];
-  uint8_t b;
-
-  // Debug output: start of setting the alarms
-  Serial.println("Set alarms start");
-
-  // Check whether the parameter "al0" is present and set alarm1
-  if (server.hasArg("al0")) {
-    alarm1 = stringToMinutes(server.arg("al0"));  // Convert the time to minutes
-    Serial.print(server.arg("al0"));              // Debug output of the passed time
-    Serial.printf(" = %i\n", alarm1);             // Debug output of the calculated alarm value
-    pref.putUInt("alarm1", alarm1);               // Save the alarm value in the settings
-  }
-
-  // Check whether the parameter "al8" is present and set alarm2
-  if (server.hasArg("al8")) {
-    alarm2 = stringToMinutes(server.arg("al8"));  // Convert the time to minutes
-    Serial.print(server.arg("al8"));              // Debug output of the passed time
-    Serial.printf(" = %i\n", alarm2);             // Debug output of the calculated alarm value
-    pref.putUInt("alarm2", alarm2);               // Save the alarm value in the settings
-  }
-
-  // Initialize the weekday flags for both alarms
-  alarmday1 = 0;
-  alarmday2 = 0;
-
-  // Check the weekday parameters for alarmday1 and alarmday2
-  for (uint8_t i = 0; i < 7; i++) {
-    // Create the parameter name for alarmday1
-    sprintf(txt, "al%i", i + 1);
-    if (server.hasArg(txt)) {
-      if (server.arg(txt) == "1") alarmday1 = alarmday1 | (1 << i);  // Set the corresponding bit for alarmday1
-    }
-
-    // Create the parameter name for alarmday2
-    sprintf(txt, "al%i", i + 9);
-    if (server.hasArg(txt)) {
-      if (server.arg(txt) == "1") alarmday2 = alarmday2 | (1 << i);  // Set the corresponding bit for alarmday2
-    }
-  }
 
   // Save the weekday flags in Settings
-  pref.putUShort("alarmday1", alarmday1);
-  pref.putUShort("alarmday2", alarmday2);
+  
 
   // Debug output of weekday flags
-  Serial.printf("days1 %x days2 %x\n", alarmday1, alarmday2);
+  
 
   // Find the next alarm and display it if Clock mode is active
-  findNextAlarm();
-  if (clockmode) showNextAlarm();
-
-  // Send a confirmation in response
-  server.send(200, "text/plain", "OK");
-}
+  
 
 // Processes the AJAX command /cmd/getstation to retrieve data from a specific station
 void getStationData() {
@@ -425,20 +377,9 @@ void GainSlider() {
 }
 
 // Verarbeitet den AJAX-Befehl /cmd/btnAlarm, um den Alarm ein- oder auszuschalten
-void btnAlarm() {
-  // Schaltet den Alarm um
-  toggleAlarm();
-  // Antwortet mit "OK"
-  server.send(200, "text/plain", "OK");
-}
+
 
 // Verarbeitet den AJAX-Befehl /cmd/startSleep, um die Schlummerfunktion zu starten
-void startSleep() {
-  // Startet die Schlummerfunktion
-  startSnooze();
-  // Antwortet mit "OK"
-  server.send(200, "text/plain", "OK");
-}
 
 // Verarbeitet den AJAX-Befehl /cmd/beforeStation, um zur vorherigen "aktiven" Station zu wechseln
 void beforeStation() {

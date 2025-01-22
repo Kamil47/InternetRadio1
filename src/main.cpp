@@ -286,28 +286,10 @@ void loop() {
     }
     
     // If snooze mode is activated, count down the snooze counter and turn off the radio when the counter reaches 0
-    if (snoozeWait > 0) {
-      snoozeWait--;  // Decrease the snooze count
-      if (snoozeWait == 0) {
-        toggleRadio(true);  // Switch the Radio on
-        showRadio();        // Show the Radio Information
-      }
-    }
+    
 
     // If an alarm is activated, check the day and time
-    if ((alarmday < 8) && getLocalTime(&ti)) {
-      // When the alarm day and time are reached, turn on the radio and calculate the values ​​for the next expected alarm
-      if ((alarmday == weekday) && ((minutes == alarmtime) || (minutes == (alarmtime + 1)))) {
-        // Test Beeper#####################
-
-        // Test Beeper#####################
-        toggleRadio(false);  // Switch the Radio off
-        showRadio();         // Show the Radio Information      
-        findNextAlarm();     // Calculate the next Alarm
-        showNextAlarm();     // Show the next Alarm
-      }
-      
-    }
+    
     
   }
 
