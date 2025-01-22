@@ -13,20 +13,16 @@
 
 void showConfigPage();
 void drawHeaderInfos();
-void drawSnoozeInfo();
+
 void drawWifiInfo();
 void encodeUnicode(const char* src, char* dst);
 void updateStation();
-void toggleAlarmDay(uint16_t xPos, uint16_t yPos);
-void in_de_crementAlarmTimeHH(uint16_t xPos, uint16_t yPos);
+
 void setBrightness(uint16_t value);
 void selectStation(uint16_t x);
-void showAlarmPage();
-void setSnoozeTime(uint16_t value);
-void safeAlarmTime();
-void in_de_crementAlarmTimeMM(uint16_t xPos, uint16_t yPos);
+
 bool startUrl(String url);
-void showAlarms_Day_and_Time();
+
 void FavoriteButtons();
 boolean radiopage = false;
 boolean configpage = false;
@@ -71,26 +67,9 @@ void DrawFooterButtons_Power_Sleep_Alarm() {
   // Draw the bitmap for the power button
   tft.drawBitmap(0, 176, knopf_sym[0], 64, 64, color_temp, COLOR_KNOEPFE_BG);
 
-  // Sleep Button
-  if (snoozeWait != 0) {          // When snooze mode is active
-    color_temp = ILI9341_ORANGE;  // Set color for active snooze mode
-  } else {
-    color_temp = COLOR_KNOEPFE;  // Set default color for inactive state  }
-  }  
-  // Draw the bitmap for the Sleep Button
-  tft.drawBitmap(64, 176, knopf_sym[1], 64, 64, color_temp, COLOR_KNOEPFE_BG);
-
-  // Alarm Button
-  uint8_t symbol;
-  if (alarmday < 8) {            // When Alarm is active 
-    color_temp = COLOR_KNOEPFE;  // Set default color for active Alarm
-    symbol = 2;                  // Select active alarm icon
-  } else {                       // When the alarm is disabled
-    color_temp = ILI9341_RED;    // Set color for disabled alarm clock
-    symbol = 3;                  // Select icon for deactivated alarm
-  }
+  
   // Draw the Bitmap for the Alarm Button
-  tft.drawBitmap(128, 176, knopf_sym[symbol], 64, 64, color_temp, COLOR_KNOEPFE_BG);
+  
 }
 
 // Handles interaction with the footer buttons for power, sleep and alarm
@@ -106,14 +85,6 @@ void handleFooterButtons_Power_Sleep_Alarm(int x, int y) {
     toggleRadio(radio);  // Switch the Radio on or off
   }
   
-  // Sleep Button (Position: 64 bis 128)
-  else if ((x > 64) && (x < 128)) {
-    startSnooze();  // Start Snooze mode
-  }
-  // Alarm Button (Position: 128 bis 192)
-  else if ((x > 128) && (x < 192)) {
-    toggleAlarm();  // Switch the Alarm on or off
-  }
   
 }
 
@@ -213,7 +184,7 @@ void onTouchClick(TS_Point p) {
         clockmode = false;
         configpage = false;
         radiopage = true;
-        boolean alarmpage = false;
+        
         showRadioPage();  // Switch to radio page
       }
     } else {                          // Below 210px
@@ -228,7 +199,7 @@ void onTouchClick(TS_Point p) {
         clockmode = false;
         configpage = true;
         radiopage = false;
-        alarmpage = false;
+        
         showConfigPage();
       }
     }
@@ -244,56 +215,16 @@ void onTouchClick(TS_Point p) {
     if ((p.y > 132) && (p.y < 175)) selectStation(p.x);
   } else if (configpage) {  //################################################ CONFIG PAGE
     // When we are in configuration mode
-    if (p.y > 180) {                                    // If Y coordinate is greater than 180, we are in the button area
-      handleFooterButtons_Power_Sleep_Alarm(p.x, p.y);  // Process footer buttons
-      if ((p.x > 192) && (p.x < 256)) changeStation();  // Change to the next station
-      if (p.x > 256) {                                  // If X coordinate is greater than 256, switch to alarm page
-        clockmode = false;
-        configpage = false;
-        radiopage = false;
-        alarmpage = true;
-        showAlarmPage();
-      }
-    }
+     
     // Volume control range (0 to 44)
     if ((p.y > 0) && (p.y < 44)) setGainValue(p.x, "SettingPage");
     // Brightness control range (44 to 88)
     if ((p.y > 44) && (p.y < 88)) setBrightness(p.x);
     // Snooze timer range (88 to 132)
-    if ((p.y > 88) && (p.y < 132)) setSnoozeTime(p.x);
+    
     // Area for the station list (132 to 175)
     if ((p.y > 132) && (p.y < 175)) selectStation(p.x);
-  } else if (alarmpage) {  //################################################ ALARM SETTING PAGE
-    // When we are in alarm setting mode
-    if (p.y > 180) {                                    // If Y coordinate is greater than 180, we are in the button area
-      handleFooterButtons_Power_Sleep_Alarm(p.x, p.y);  // Process footer buttons
-      if ((p.x > 192) && (p.x < 256)) safeAlarmTime();  // Save the alarm time
-      if (p.x > 256) {                                  // If X coordinate is greater than 256, return to main page
-        clockmode = true;
-        configpage = false;
-        radiopage = false;
-        alarmpage = false;
-        showClock();
-      }
-    }
-    
-    // Range for switching alarm days (0 to 44)
-    if ((p.y > 0) && (p.y < 44)) toggleAlarmDay(p.x, p.y);
-    // Range for switching alarm days (88 to 132)
-    if ((p.y > 88) && (p.y < 132)) toggleAlarmDay(p.x, p.y);
-    // Alarm time adjustment range (HH) (44 to 88 and 132 to 176)
-    if (((p.y > 44) && (p.y < 88)) || ((p.y > 132) && (p.y < 176))) {
-      if (p.x < 50) in_de_crementAlarmTimeHH(p.x, p.y);
-      if ((p.x > 50) && (p.x < 100)) in_de_crementAlarmTimeHH(p.x, p.y);
-    }
-    // Alarm time adjustment range (MM) (44 to 88 and 132 to 176)
-    if (((p.y > 44) && (p.y < 88)) || ((p.y > 132) && (p.y < 176))) {
-      if ((p.x > 220) && (p.x < 270)) in_de_crementAlarmTimeMM(p.x, p.y);
-      if (p.x > 270) in_de_crementAlarmTimeMM(p.x, p.y);
-    }
-    
-    // Area for the save function (no special comment necessary as this is not directly specified in the code)
-  }
+  } 
 }
 
 
@@ -371,31 +302,7 @@ void setBrightness(uint16_t value) {
   // The function calculates the snooze time in minutes and adjusts the slider accordingly.
   // The value is limited to a range of 0 to 60 minutes, saved and displayed.
 
-void setSnoozeTime(uint16_t value) {
-  char txt[10];
 
-  // Calculate the snooze time based on the x position of the slider from 0 to 60 minutes
-  // The slider has a starting value of 15 and the value range is mapped to 0 to 60 minutes
-  float v = (value - 15) * 0.21;  // Conversion of position in minutes
-
-  // Limit the value to the range of 0 to 60 minutes
-  if (v > 60) v = 60;  // Limit maximum value to 60 minutes
-  if (v < 0) v = 0;    // Limit minimal value to 0 minutes
-
-  snoozeTime = v;  // Set the current snooze time value
-
-  // Save the current snooze time value
-  pref.putUShort("snooze", snoozeTime);
-
-  // Display the snooze slider
-  showSlider(115, snoozeTime, 60);
-
-  // Format the snooze time value as text
-  sprintf(txt, "%i min", (int)snoozeTime);
-
-  // Display the snooze time value to the right of the slider
-  displayMessage(231, 96, 80, 20, txt, ALIGNRIGHT, false, ILI9341_BLACK, ILI9341_LIGHTGREY, 1);
-}
 
   // Adjust the display backlight based on percentage
   // If the percentage is 0, the brightness of the display will be reset every 10 seconds,
@@ -508,30 +415,11 @@ void toggleRadio(boolean off) {
 // the alarm is disabled by setting 'alarmday' to 8.
 // The alarm status is updated accordingly in the settings.
 // The mode is then set to clock and the clock display is displayed.
-void toggleAlarm() {
-  if (alarmday > 7) {
-    // If the alarm was off (alarmday > 7), find the next alarm and activate it
-    findNextAlarm();                // Search for the next available alarm
-    pref.putBool("alarmon", true);  // Set the alarm status to 'on' in the settings
-  } else {
-    // Wenn der Alarm aktiviert ist, deaktiviere ihn
-    alarmday = 8;                    // Set alarmday to 8, which is interpreted as 'alarm off'
-    pref.putBool("alarmon", false);  // Set the alarm status to 'off' in the settings
-  }
-  // Switch to clock display
-  clockmode = true;  // Set the mode to Clock
-  showClock();       // Show the clock display
-}
+
 
 // Starts the snooze function. Sets the snooze time to the current value of 'snoozeTime',
 // stops the radio from playing by calling the 'toggleRadio(false)' function,
 // and then switches to clock mode by setting 'clockmode' to true and displaying the clock display.
-void startSnooze() {
-  snoozeWait = snoozeTime;  // Sets the snooze time to the current value of snoozeTime
-  toggleRadio(false);       // Turns off the radio (stops playback)
-  clockmode = true;         // Sets the mode to clock
-  showClock();              // Displays the clock display
-}
 
 //Sets the selected station as the active station, saves this value and tries to start the URL of the current station.
 // If starting the URL fails, it switches to station 0. The mode is then set to clock and the clock display is displayed.
@@ -706,8 +594,7 @@ void updateTime(boolean redraw) {
 // Records the information in the header of the display, including wifi information, sleep icon and next alarm time.
 void drawHeaderInfos() {
   drawWifiInfo();    // Records the current Wifi information in the header
-  drawSnoozeInfo();  // Draws the sleep icon in the header
-  showNextAlarm();   // Draws the alarm icon and the next alarm text in the header
+  
 }
 
 // Records the Wifi information in the header of the display
@@ -738,20 +625,7 @@ void drawWifiInfo() {
 }
 
 // Draws the sleep icon in the header of the display
-void drawSnoozeInfo() {
-  uint16_t color_snooze;  // Variable for storing the color for the sleep symbol
 
-  //Check if the snooze function is active (snoozeWait != 0)
-  if (snoozeWait != 0) {
-    color_snooze = COLOR_SLEEP_SYMBOL;  // Color for the active sleep symbol
-  } else {
-    color_snooze = COLOR_BG;  // Background color for the inactive sleep icon
-  }
-
-// Draw the sleep symbol at position (256, 0) with the specified color
-// The symbol has a size of 17x17 pixels
-  tft.drawBitmap(256, 0, symbole[1], 17, 17, color_snooze, COLOR_BG);
-}
 
 // Clears the entire screen and resets it to the background color
 void displayClear() {
@@ -915,37 +789,6 @@ void showBrigthness() {
 }
 
 // Function to display snooze time on the configuration screen
-void showSnoozeTime() {
-  char txt[20];  // Buffer for text
-
-  // Draw a rectangle for the background
-  tft.fillRect(0, 88, 320, 44, COLOR_SETTING_BG);
-
-  // Draw a rectangle for the frame
-  tft.drawRect(0, 88, 320, 44, COLOR_SETTING_BORDER);
-
-  // Format current snooze time as text
-  sprintf(txt, "%i min", snoozeTime);
-
-  // Show text for snooze time
-  textInBox(231, 96, 80, 20, txt, ALIGNRIGHT, false, ILI9341_BLACK, COLOR_SETTING_BG, 1);
-
-  // Set cursor position for the label text
-  tft.setCursor(5, 111);
-
-  // Set font
-  tft.setFont(FNT9);
-
-  // Set text color to black
-  tft.setTextColor(ILI9341_BLACK);
-
-  // Show text “Einschlafzeit" -"Time to fall asleep” with coded umlauts
-  encodeUnicode("Einschlafzeit", txt);
-  tft.print(txt);
-
-  // Draw slider to display snooze time
-  showSlider(115, snoozeTime, 60);
-}
 
 // Function to display the selected station in the station area
 void updateStation() {
@@ -982,16 +825,16 @@ void showConfigPage() {
 
   showGain();         // Show volume range
   showBrigthness();   // Show brightness range
-  showSnoozeTime();   // Show sleep time range
+  
   showStationList();  // Show station list display area
 
-  DrawFooterButtons_Power_Sleep_Alarm();  // Draw buttons for power, sleep and alarm in the footer
+  
 
   // Draw radio button
   tft.drawBitmap(192, 176, knopf_sym[4], 64, 64, COLOR_KNOEPFE, COLOR_KNOEPFE_BG);
 
   // Draw a button to switch to the alarm screen (clock display).
-  tft.drawBitmap(256, 176, knopf_sym[7], 64, 64, COLOR_KNOEPFE, COLOR_KNOEPFE_BG);
+  
 
   start_conf = millis();  // Record the start time of the configuration page
 }
@@ -1019,235 +862,19 @@ void showRadioPage() {
 // Function to display the full alarm screen
 
 
-void showAlarmPage() {
-  //Update the alarm configuration for the first alarm
-  alarmConfig.alarmday_1 = alarmday1;  // Set the day of the week of the first alarm
-  alarmConfig.h_1 = alarm1 / 60;       // Calculate and set the hourly value of the first alarm
-  alarmConfig.m_1 = alarm1 % 60;       // Calculate and set the minute value of the first alarm
-
-  // Update the alarm configuration for the second alarm
-  alarmConfig.alarmday_2 = alarmday2;  // Set the day of the week of the 2.alarm
-  alarmConfig.h_2 = alarm2 / 60;       // Calculate and set the hourly value of the second alarm
-  alarmConfig.m_2 = alarm2 % 60;       // Calculate and set the minute value of the second alarm
-  setBGLight(100);                   // Set backlight brightness to 100%
-  tft.fillScreen(COLOR_KNOEPFE_BG);  // Fill the screen background with the defined button color
-
-  // Draw area for first alarm
-  tft.fillRect(0, 0, 320, 88, COLOR_SETTING_BG);
-  tft.drawRect(0, 0, 320, 88, COLOR_SETTING_BORDER);
-
-  // Draw area for second alarm
-  tft.fillRect(0, 88, 320, 88, COLOR_SETTING_BG);
-  tft.drawRect(0, 88, 320, 88, COLOR_SETTING_BORDER);
-
-  // Draw first alarm hours and minutes buttons (up/down)
-  tft.drawBitmap(0, 44, symbole[5], 50, 44, COLOR_SETTING_UP_DOWN);    // Hour up
-  tft.drawBitmap(50, 44, symbole[4], 50, 44, COLOR_SETTING_UP_DOWN);   // Hour down
-  tft.drawBitmap(220, 44, symbole[5], 50, 44, COLOR_SETTING_UP_DOWN);  // Minute up
-  tft.drawBitmap(270, 44, symbole[4], 50, 44, COLOR_SETTING_UP_DOWN);  // Minute down
-
-  // Draw second alarm hours and minutes buttons (up/down)
-  tft.drawBitmap(0, 132, symbole[5], 50, 44, COLOR_SETTING_UP_DOWN);    // Hour up
-  tft.drawBitmap(50, 132, symbole[4], 50, 44, COLOR_SETTING_UP_DOWN);   // Hour down 
-  tft.drawBitmap(220, 132, symbole[5], 50, 44, COLOR_SETTING_UP_DOWN);  // Minute up
-  tft.drawBitmap(270, 132, symbole[4], 50, 44, COLOR_SETTING_UP_DOWN);  // Minute down
-
-  // Display of the days and times for the alarms
-  showAlarms_Day_and_Time();  // First and third lines (MON-SUN buttons) and second and fourth lines (time)
-
-  // Draw buttons for power, sleep and alarm in the footer
-  DrawFooterButtons_Power_Sleep_Alarm();
-
-  // Draw button to save alarm settings
-  tft.drawBitmap(192, 176, knopf_sym[8], 64, 64, COLOR_KNOEPFE, COLOR_KNOEPFE_BG);
-
-  // Draw button to switch to clock screen
-  tft.drawBitmap(256, 176, knopf_sym[5], 64, 64, COLOR_KNOEPFE, COLOR_KNOEPFE_BG);
-
-  start_conf = millis();  // Record the start time of the alarm configuration page
-}
 
 // Function to display alarm days and times
-void showAlarms_Day_and_Time() {
-  uint8_t mask;        // Bitmask for days of the week
-  uint16_t xPos;       // X position for display
-  uint16_t color_txt;  // Color variable for text (not used but declared)
-  uint16_t color_bg;   // Color variable for background
-  char buf[45];        // Time formatting buffer
-
-  // Loop to display the days of the week for both alarms
-  for (uint8_t i = 1; i < 8; i++) {
-    xPos = 12 + (i - 1) * 44;  // Calculation of the X position for the days of the week
-
-    // Display of the days of the week for alarmday_1
-    mask = 1 << (i % 7);  // Bitmask for the current day of the week
-    color_bg = ((alarmConfig.alarmday_1 & mask) == 0) ? COLOR_SETTING_BG : ILI9341_GREEN;
-    textInBox(xPos, 8, 32, 32, days_short[i % 7], ALIGNCENTER, false, ILI9341_BLACK, color_bg, 1);
-
-    // Display of the days of the week for alarmday_2
-    mask = 1 << (i % 7);  // Bitmask for the current day of the week
-    color_bg = ((alarmConfig.alarmday_2 & mask) == 0) ? COLOR_SETTING_BG : ILI9341_GREEN;
-    textInBox(xPos, 96, 32, 32, days_short[i % 7], ALIGNCENTER, false, ILI9341_BLACK, color_bg, 1);
-  }
-
-  // Display the time for alarm_1
-  sprintf(buf, "%02i : %02i\n", alarmConfig.h_1, alarmConfig.m_1);
-  textInBox(100, 52, 120, 32, buf, ALIGNCENTER, false, ILI9341_BLACK, COLOR_SETTING_BG, 1);
-
-  // Display the time for alarm_1
-  sprintf(buf, "%02i : %02i\n", alarmConfig.h_2, alarmConfig.m_2);
-  textInBox(100, 140, 120, 32, buf, ALIGNCENTER, false, ILI9341_BLACK, COLOR_SETTING_BG, 1);
-}
 
 // Toggles a day for the alarm
-void toggleAlarmDay(uint16_t xPos, uint16_t yPos) {
-  uint8_t mask = 0B00000000;  // Initialization of the mask
-  // Bestimme die Maske basierend auf der X-Position
-  if (xPos < 50) mask = 0B00000010;                     // Mo
-  if ((xPos > 50) && (xPos < 96)) mask = 0B00000100;    // Tu
-  if ((xPos > 96) && (xPos < 140)) mask = 0B00001000;   // We
-  if ((xPos > 140) && (xPos < 184)) mask = 0B00010000;  // Th
-  if ((xPos > 184) && (xPos < 228)) mask = 0B00100000;  // Fr
-  if ((xPos > 228) && (xPos < 272)) mask = 0B01000000;  // Su
-  if (xPos > 272) mask = 0B00000001;                    // So
 
-  // Toggle for alarmday_1 if the Y position is in the range 0 to 44
-  if ((yPos > 0) && (yPos < 44)) {
-    alarmConfig.alarmday_1 = alarmConfig.alarmday_1 ^ mask;
-  }
-  // Toggle for alarmday_2 if the Y position is in the range 88 to 132
-  if ((yPos > 88) && (yPos < 132)) {
-    alarmConfig.alarmday_2 = alarmConfig.alarmday_2 ^ mask;
-  }
-
-  // View updated alarm days and times
-  showAlarms_Day_and_Time();
-}
 
 // Increments or decrements the alarm hours
-void in_de_crementAlarmTimeHH(uint16_t xPos, uint16_t yPos) {
-  // Increment/decrement for alarmtime_HH_1
-  if ((yPos > 44) && (yPos < 88)) {
-    // Incrementing the hours for alarmtime_HH_1
-    if (xPos < 50) alarmConfig.h_1 = (alarmConfig.h_1 + 1) % 24;
-    // Decrementing the hours for alarmtime_HH_1
-    if ((xPos > 50) && (xPos < 100)) {
-      if (alarmConfig.h_1 == 0) alarmConfig.h_1 = 24;  // For 0 hours set to 24
-      alarmConfig.h_1 = alarmConfig.h_1 - 1;
-    }
-  }
-  // Incrementing the hours for alarmtime_HH_2
-  if ((yPos > 132) && (yPos < 176)) {
-    // Incrementing the hours for alarmtime_HH_2
-    if (xPos < 50) alarmConfig.h_2 = (alarmConfig.h_2 + 1) % 24;
-    // Decrementing the hours for alarmtime_HH_2
-    if ((xPos > 50) && (xPos < 100)) {
-      if (alarmConfig.h_2 == 0) alarmConfig.h_2 = 24;  // For 0 hours set to 24
-      alarmConfig.h_2 = alarmConfig.h_2 - 1;
-    }
-  }
-  // Displays updated alarm days and times
-  showAlarms_Day_and_Time();
-}
+
 
 // Increments or decrements the alarm minutes in 5 minute increments
-void in_de_crementAlarmTimeMM(uint16_t xPos, uint16_t yPos) {
-  uint8_t min1_1, min2_1, min1_2, min2_2;
-  min1_1 = alarmConfig.m_1 / 10;  // Tens digit for minutes alarm 1
-  min2_1 = alarmConfig.m_1 % 10;  // Ones digit for minutes alarm 1
-  min1_2 = alarmConfig.m_2 / 10;  // Tens digit for minutes alarm 2
-  min2_2 = alarmConfig.m_2 % 10;  // Ones digit for minutes alarm 2
-
-  // Incrementation of minutes
-  if ((xPos > 220) && (xPos < 270)) {
-    if ((yPos > 44) && (yPos < 88)) {  // Incrementation MM_1
-      // Calculate the minutes forward in 5-minute increments
-      uint8_t currentMinutes_1 = min1_1 * 10 + min2_1;
-      if (currentMinutes_1 % 5 == 0) {
-        currentMinutes_1 += 5;  // Add 5 minutes if the current value is divisible by 5
-      } else {
-        currentMinutes_1 = ((currentMinutes_1 + 4) / 5) * 5;  // Round to the nearest number divisible by 5
-      }
-      if (currentMinutes_1 >= 60) currentMinutes_1 -= 60;  // Reset to 0 minutes when it reaches 60
-      // Separate the minutes into tens and ones
-      min1_1 = currentMinutes_1 / 10;
-      min2_1 = currentMinutes_1 % 10;
-      alarmConfig.m_1 = min1_1 * 10 + min2_1;
-    }
-    if ((yPos > 132) && (yPos < 176)) {  // Incrementation MM_2
-      // Calculate the minutes forward in 5-minute increments
-      uint8_t currentMinutes_2 = min1_2 * 10 + min2_2;
-      if (currentMinutes_2 % 5 == 0) {
-        currentMinutes_2 += 5;  // Add 5 minutes if the current value is divisible by 5 
-      } else {
-        currentMinutes_2 = ((currentMinutes_2 + 4) / 5) * 5;  // Round to the nearest number divisible by 5
-      }
-      if (currentMinutes_2 >= 60) currentMinutes_2 -= 60;  // Reset to 0 minutes when it reaches 60
-      // Separate the minutes into tens and ones
-      min1_2 = currentMinutes_2 / 10;
-      min2_2 = currentMinutes_2 % 10;
-      alarmConfig.m_2 = min1_2 * 10 + min2_2;
-    }
-  }
-
-  // Decrement of minutes
-  if (xPos > 270) {
-    if ((yPos > 44) && (yPos < 88)) {  // Decrement MM_1
-      // Calculate the minutes backwards in 5-minute increments
-      uint8_t currentMinutes_1 = min1_1 * 10 + min2_1;
-      if (currentMinutes_1 % 5 == 0) {
-        currentMinutes_1 -= 5;  // Subtract 5 minutes if the current value is divisible by 5
-      } else {
-        currentMinutes_1 = ((currentMinutes_1 - 1) / 5) * 5;  // Round to previous number divisible by 5
-      }
-      if (currentMinutes_1 >= 60) currentMinutes_1 -= 60;  // Reset to 55 minutes if < 0
-      // Separate the minutes into tens and ones
-      min1_1 = currentMinutes_1 / 10;
-      min2_1 = currentMinutes_1 % 10;
-      alarmConfig.m_1 = min1_1 * 10 + min2_1;
-    }
-    if ((yPos > 132) && (yPos < 176)) {  // Dekrement MM_2
-      // Calculate the minutes backwards in 5-minute increments
-      uint8_t currentMinutes_2 = min1_2 * 10 + min2_2;
-      if (currentMinutes_2 % 5 == 0) {
-        currentMinutes_2 -= 5;  // Subtract 5 minutes if the current value is divisible by 5
-      } else {
-        currentMinutes_2 = ((currentMinutes_2 - 1) / 5) * 5;  // Round to previous number divisible by 5
-      }
-      if (currentMinutes_2 >= 60) currentMinutes_2 -= 60;  // Reset to 55 minutes if < 0
-      // Separate the minutes into tens and ones
-      min1_2 = currentMinutes_2 / 10;
-      min2_2 = currentMinutes_2 % 10;
-      alarmConfig.m_2 = min1_2 * 10 + min2_2;
-    }
-  }
-  // Displays updated alarm days and times
-  showAlarms_Day_and_Time();
-}
 
 // Saves the changed alarm time and displays 'OK'
-void safeAlarmTime() {
-  start_conf -= 9000;  // Resets the start timestamp of the configuration page
 
-  uint16_t alarmtime_1, alarmtime_2;
-  alarmtime_1 = alarmConfig.h_1 * 60 + alarmConfig.m_1;  // Calculates minutes for alarm 1
-  alarmtime_2 = alarmConfig.h_2 * 60 + alarmConfig.m_2;  // Calculates minutes for alarm 2
-
-  alarm1 = alarmtime_1;                    // Saves the alarm time 1
-  alarmday1 = alarmConfig.alarmday_1;      // Saves the alarm day 1
-  pref.putUInt("alarm1", alarm1);          // Saves alarm time 1 in the settings
-  pref.putUShort("alarmday1", alarmday1);  // Saves alarm day 1 in the settings
-
-  alarm2 = alarmtime_2;                    // Saves the alarm time 2
-  alarmday2 = alarmConfig.alarmday_2;      // Saves the alarm day 2
-  pref.putUInt("alarm2", alarm2);          // Saves alarm time 2 in the settings
-  pref.putUShort("alarmday2", alarmday2);  // Saves alarm day 2 in the settings
-
-  tft.fillScreen(COLOR_BG);                                                          // Reset wallpaper
-  textInBox(0, 0, 320, 240, TXT_OK, ALIGNCENTER, true, ILI9341_GREEN, COLOR_BG, 1);  // Displays 'OK'
-
-  findNextAlarm();  // Finds the next alarm
-}
 
 // Displays the name of the active station on the TFT display
 void showStation() {
@@ -1271,30 +898,7 @@ void showRadio() {
   }
 }
 
-// When an alarm is active, the next alarm date and time are displayed
-void showNextAlarm() {
-  uint16_t color_alarm;  // Color variable for the alarm icon
-  uint8_t symbol;        // Symbol ID for the alarm symbol
-  char txt[50] = "";     // Text for the ad (advertisement?)
-  uint8_t h, m;          // Hour and minute variable for alarm time
 
-  if (clockmode) {
-    if (alarmday < 8) {                                          // When the alarm clock is activated
-      color_alarm = COLOR_ALARM_SYMBOL;                          // Alarm icon color
-      symbol = 2;                                                // Symbol ID for the bell symbol
-      h = alarmtime / 60;                                        // Calculate hours
-      m = alarmtime % 60;                                        // Calculate minutes
-      sprintf(txt, "%s %02i:%02i", days_short[alarmday], h, m);  // Format text for alarm time
-    } else {                                                     // When the alarm is turned off
-      color_alarm = ILI9341_RED;                                 // Alarm icon color
-      symbol = 3;                                                // Symbol ID for the strikethrough bell symbol
-      sprintf(txt, "AUS");                                       // Text for alarm clock turned off
-    }
-
-    tft.drawBitmap(0, 0, symbole[symbol], 17, 17, color_alarm, COLOR_BG);         // Drawing alarm symbol
-    textInBox(17, 0, 80, 17, txt, ALIGNCENTER, false, color_alarm, COLOR_BG, 1);  // Show alarm text
-  }
-}
 
 // Can be used to display three integers on the bottom line of the display
 void showDebugInfo(int16_t v1, int16_t v2, int16_t v3) {
