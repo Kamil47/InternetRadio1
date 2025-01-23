@@ -49,55 +49,7 @@ void displayMessage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const char* 
 // Sets `alarmtime` to the time of day and `alarmday` to the day of the week for the alarm
 // or to 8 if there is no alarm
 
-void findNextAlarm() {
-  Serial.println("Search next alarm time");
-  int wd;        // Variables for actual Weekday
-  uint8_t mask;  // Filter Mask for Weekday
 
-  if (getLocalTime(&ti)) {            //Get the current date and time                    
-    wd = weekday;                     // Set wd to the current day of the week
-    alarmday = 8;                     // Set alarmday to 8, which means there is no ala
-    alarmtime = MINUTES_PER_DAY + 1;  // Set alarmtime to a value greater than the maximum possible value for minutes per day
-
-    mask = 1 << wd;  // Set Mask for actual Weekday
-
-    // Check whether alarm time 1 matches and whether the alarm is before the current time
-    if (((alarmday1 & mask) != 0) && (alarm1 > minutes)) {
-      alarmtime = alarm1;  // Set Alarm time to alarm 1
-      alarmday = wd;       // Set Alarm day to actual day of week
-    }
-
-    // Check whether alarm time 2 matches and whether the alarm is before the current time
-    if (((alarmday2 & mask) != 0) && (alarm2 > minutes) && (alarmtime > alarm2)) {
-      alarmtime = alarm2;  // Set Alarm time to alarm 2
-      alarmday = wd;       // Set Alarm day to actual day of week
-    }
-    
-    // If no alarm is found, continue searching for the next alarm in the coming week
-    if (alarmday == 8) {  // If alarmday is 8, no alarm is detected
-      do {
-        wd++;                // Go to the next Weekday
-        if (wd > 7) wd = 0;  // If Weekday is above 7, set it to 0 (Sunday)
-
-        mask = 1 << wd;  // Set a new Mask for actual Weekday
-
-        // Check a new Alarm 1
-        if ((alarmday1 & mask) != 0) {
-          alarmtime = alarm1;  // Set Time to Alarm 1
-          alarmday = wd;       // Set alarmday to actual Weekday
-        }
-
-        // Check a new Alarm 2
-        if (((alarmday2 & mask) != 0) && (alarmtime > alarm2)) {
-          alarmtime = alarm2;  // Set Time to Alarm 2
-          alarmday = wd;       // Set alarmday to actual Weekday
-        }
-
-      } while ((alarmday == 8) && (wd != weekday));  // Repeat until a valid alarm is found or a week has passed
-   } 
-    Serial.printf("Next alarm %i on %i\n", alarmtime, alarmday);  // Output the next alarm time and day of the week
-  }
-}
 
 // Initialyzing the System
 void setup() {
@@ -121,26 +73,11 @@ void setup() {
   uint8_t curGain = 50;                                              // Standard value for Loudness
   if (pref.isKey("gain")) curGain = pref.getUShort("gain");  // Get the Volume value
 
-  uint8_t snoozeTime = 30;                                                 // Default value for snooze Time in minutes
-  if (pref.isKey("snooze")) snoozeTime = pref.getUShort("snooze");  // Get the snooze Time
-
+  
   uint8_t bright = 80;                                                  // Standard value for Brightness in minutes
   if (pref.isKey("bright")) bright = pref.getUShort("bright");  // Get the Brightness
 
-  alarm1 = 390;                                               // Standard value for Alarm Time 1 (6:30)
-  if (pref.isKey("alarm1")) alarm1 = pref.getUInt("alarm1");  // Get the Alarm 1
-
-  alarmday1 = 0B00111110;                                                // Standard value for Week Day (Mo-Fr)
-  if (pref.isKey("alarmday1")) alarmday1 = pref.getUShort("alarmday1");  // Get the Week day for Alarm 1
-
-  alarm2 = 480;                                               // Standard value for Alarm Time 2(8:00)
-  if (pref.isKey("alarm2")) alarm2 = pref.getUInt("alarm2");  // Get the Alarm 2
-
-  alarmday2 = 0B01000001;                                                // Standard value for Week Day (Mo-Fr)
-  if (pref.isKey("alarmday2")) alarmday2 = pref.getUShort("alarmday2");  // Get the Week day for Alarm 2
-
-  alarmtime = 0;  // Start value for the next Alarm time
-  alarmday = 8;   // Start value for the next Alarm day (8 means, Alarm is not active)
+  
   
   uint8_t curStation = 0;  // Standard value for actual station
   // Set the current station to the saved value, if available
