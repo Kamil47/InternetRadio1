@@ -65,7 +65,7 @@ $(document).ready(function() {
 function getAll() {
     getSSID();
     getStationList();
-    getAlarms();
+    
     getInfo();
     updateGitHubInfo();
 }
@@ -168,27 +168,7 @@ function getSSID() {
     });
 }
 
-function getAlarms() {
-  $.ajax({
-      type:"GET",
-      url:"/cmd/getalarms",
-      data:{},
-      success: function(data){
-          const parts = data.split("\n");
-          for (var i = 0; i < 16; i++) {
-              if ((i==0) || (i==8)) {
-                  $("#al"+i).val(parts[i]);
-              } else {
-                  if (parts[i]=='1') {
-                      $("#al"+i).prop('checked',true);
-                  } else {
-                      $("#al"+i).prop('checked',false);
-                  }
-              }
-          }
-      }
-  });
-}
+
 
 function saveSSID() {
   $.ajax({
@@ -201,25 +181,6 @@ function saveSSID() {
   });
 }
 
-function setAlarms() {
-    const vals = new Object();
-    for (var i = 0; i < 16; i++) {
-        if ((i == 0) || (i == 8)) {
-            vals['al'+i] = $("#al"+i).val();
-        } else {
-            vals['al'+i] = $("#al"+i).prop("checked")?'1':'0';
-        }
-    }
-
-    $.ajax({
-        type:"GET",
-        url:"/cmd/setalarms",
-        data:vals,
-        success: function(data){
-            alert(data);
-        }
-    });
-}
 
 function restartHost() {
     $.ajax({
@@ -308,23 +269,7 @@ function updateCurrentStatusVolume(gain) {
   var currentGain = parseInt(gain);
   $("#GainSlider").slider("value", currentGain);
 }
-function updateCurrentStatusAlarm(alarm, alarmtime) {
-  var alarmIcon, alarmColor, btn_alarmIcon;
-  if (parseInt(alarm) === 0) {
-    alarmIcon = '<i class="fas fa-bell-slash"></i>';
-    alarmColor = 'red';
-    btn_alarmIcon = '<i class="far fa-bell"></i>';
-  } else if (parseInt(alarm) === 1) {
-    alarmIcon = '<i class="far fa-bell"></i>';
-    alarmColor = 'orange';
-    btn_alarmIcon = '<i class="fas fa-bell-slash"></i>';
-  }
-  $("#alarmIcon").html(alarmIcon);
-  $("#alarmIcon").css('color', alarmColor);
-  $("#alarmTime").text(alarmtime);
-  $("#alarmTime").css('color', alarmColor);
-  $("#btn_alarm").html(btn_alarmIcon);
-}
+
 function updateCurrentStatusRadio(station, title) {
   if (station) {
     $("#radioStation").text(station);

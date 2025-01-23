@@ -468,16 +468,7 @@ void getCurrentStatus() {
   jsonDoc["gain"] = curGain;
 
   // Alarm status
-  if (alarmday < 8) {  // Alarm is active
-    h = alarmtime / 60;
-    m = alarmtime % 60;
-    sprintf(txt, "%s %02i:%02i", days_short[alarmday], h, m);
-    jsonDoc["alarm"] = "1";
-  } else {  // Alarm is turned off
-    sprintf(txt, "AUS");
-    jsonDoc["alarm"] = "0";
-  }
-  jsonDoc["alarmtime"] = txt;
+  
 
   // Radio status
   if (radio) {
