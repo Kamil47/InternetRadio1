@@ -10,13 +10,8 @@
 #include "00_settings.h"      //N Setting
 #include "index.h"            //N Index page
 #include "00_texte.h"        //Strings (texts)
-uint16_t alarm1 = 390;
-uint16_t alarm2 = 480;
-uint8_t alarmday1 = 0b00111110;
-uint8_t alarmday2 = 0b01000001;
 uint8_t actStation = 0;
 uint8_t curGain = 50;
-uint8_t snoozeTime = 30;
 uint8_t curStation = 0;
 uint8_t bright = 0;
 uint16_t minutes = 0;
@@ -27,10 +22,7 @@ int16_t lastldr = 0;
 uint32_t start_conf = 0;
 boolean connected = false;
 boolean alarmpage = false;
-//boolean snooze = false;
 uint8_t snoozeWait = 0;
-uint16_t alarmtime = 0;
-uint8_t alarmday = 0;
 uint32_t tick = 0;
 uint32_t discon = 0;
 boolean radio = false;
@@ -221,12 +213,8 @@ void loop() {
       setBGLight(bright);  // Set the Backlight
       displayDateTime();   // Show Date and Time
     }
-    
     // If snooze mode is activated, count down the snooze counter and turn off the radio when the counter reaches 0
-    
-
     // If an alarm is activated, check the day and time
-    
     
   }
 
