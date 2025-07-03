@@ -1,8 +1,7 @@
-#include <Arduino.h>
-
-
 // 2.attemp to modify to larger metadata field on display and translate german to english
 // translated to english 2.10.2024
+
+#include <Arduino.h>
 #define RADIOVERSION "v3.0.5";
 #include "audio.h"
 #include "00_librarys.h"      //Load all libraries 
