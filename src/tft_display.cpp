@@ -38,8 +38,6 @@ typedef struct {
   uint8_t m_2;                      // Alarm Minute for Alarm 2
 } AlarmEdit;
 
-AlarmEdit alarmConfig;  // Alarm configuration instance
-
 // Instance of the display driver
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
 // Instance of the Touchscreen driver
@@ -66,10 +64,9 @@ void DrawFooterButtons_Power_Sleep_Alarm() {
   }
   // Draw the bitmap for the power button
   tft.drawBitmap(0, 176, knopf_sym[0], 64, 64, color_temp, COLOR_KNOEPFE_BG);
-
-  
+ 
   // Draw the Bitmap for the Alarm Button
-  
+ 
 }
 
 // Handles interaction with the footer buttons for power, sleep and alarm
@@ -77,6 +74,7 @@ void DrawFooterButtons_Power_Sleep_Alarm() {
 // button in the footer area of ​​the display was pressed and performs the corresponding
 // action, such as turning the radio on or off, starting snooze mode
 // or turning the alarm on or off.
+
 void handleFooterButtons_Power_Sleep_Alarm(int x, int y) {
 // Check the x coordinate to identify the button pressed
 
