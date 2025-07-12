@@ -570,7 +570,7 @@ void updateTime(boolean redraw) {
 
     uint8_t z;                                 // Variable for storing the digit value
     strftime(tim, sizeof(tim), "%H:%M", &ti);  // Formats the current time as "HH:MM"
-    Serial.printf("Zeit = %s\n", tim);         // Prints the current time to the serial console
+    Serial.printf("Time = %s\n", tim);         // Prints the current time to the serial console
 
     // Loops through the time string to check each digit.
     // If `redraw` is true or a digit has changed, that digit is redrawn.
