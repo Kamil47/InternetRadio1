@@ -49,6 +49,7 @@ void displayMessage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const char* 
 // Sets `alarmtime` to the time of day and `alarmday` to the day of the week for the alarm
 // or to 8 if there is no alarm
 
+//Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);  // Instance of the display driver
 void findNextAlarm() {
   Serial.println("Search next alarm time");
   int wd;        // Variables for actual Weekday
@@ -103,7 +104,14 @@ void findNextAlarm() {
 void setup() {
   // Start Serial communication with Baudrate 115200
   Serial.begin(115200);
+  Serial.println("Start ESP32 Internet Radio");  // Debug output: "Start ESP32 Internet Radio"
   Serial.println("Load preferences");  // Debug output: "Load Settings"
+
+  // Note: The Adafruit librarys is not setting the backlight on, so we need to do that in code
+  //pinMode(TFT_BL, OUTPUT);
+  //digitalWrite(TFT_BL, HIGH);
+
+ 
 
   title[0] = 0;  // Set the first Letter of Titel for 0 (Clear Titel)
 

@@ -45,7 +45,7 @@ typedef struct {
 AlarmEdit alarmConfig;  // Alarm configuration instance
 
 // Instance of the display driver
-Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_RST);
+Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);  // Instance of the display driver;
 // Instance of the Touchscreen driver
 XPT2046_Touchscreen touch(TOUCH_CS, TOUCH_IRQ);
 // Instance for handling touch events

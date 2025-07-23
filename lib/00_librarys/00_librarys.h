@@ -8,6 +8,7 @@
 #include <Adafruit_ILI9341.h>       // Driver Library for ILI9341 TFT-Display
 #include <XPT2046_Touchscreen.h>    // Driver Library for ILI9341 XPT2046 Touchscreen
 #include <TouchEvent.h>             // Library to analyse Touchscreen-Events
+#include <SPI.h>                    // Library for SPI Communication
 
 // ESP32 Library for Flash Memory Setting
 #include <Preferences.h>
