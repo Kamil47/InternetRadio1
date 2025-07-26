@@ -10,6 +10,7 @@
 #include <TouchEvent.h>             // Library to analyse Touchscreen-Events
 #include <SPI.h>                    // Library for SPI Communication
 
+
 // ESP32 Library for Flash Memory Setting
 #include <Preferences.h>
 

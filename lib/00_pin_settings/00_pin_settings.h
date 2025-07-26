@@ -24,3 +24,9 @@
 #define TFT_MOSI 13  // MOSI Pin for the TFT-Display
 #define TFT_SCLK 14   // SCLK Pin for the TFT-Display
 #define LED_ON 0    // Logic level for the backlight (0 = Ein)
+/*
+// Pins for Touch
+#define TOUCH_MOSI 13   // Chip Select for the Touchscreen
+#define TOUCH_CLK 14   // Clock for the Touchscreen
+#define TOUCH_MISO 12  // MISO for the Touchscreen
+*/
